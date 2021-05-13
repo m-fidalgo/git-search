@@ -1,44 +1,64 @@
-const listElement = document.querySelector("#list");
-const searchInput = document.querySelector("#search");
-const languageSelect = document.querySelector("#language-tags");
+const Template = (function () {
+  const languageSelect = document.querySelector("#language-tags");
+  const listElement = document.querySelector("#list");
 
-let languageTag = "en-US";
+  let listItems = [];
 
-let listItems = [
-  {
-    name: "Nome",
-    created_at: "2021-01-23T20:10:50Z",
-    forks: 10,
-  },
-];
+  let languageTag = "en-US";
 
-languageSelect.addEventListener("change", changeLanguage);
+  languageSelect.addEventListener("change", changeLanguage);
 
-function changeLanguage() {
-  languageTag = languageSelect.value;
-  render();
-}
+  function changeLanguage() {
+    languageTag = languageSelect.value;
+    render();
+  }
 
-function render() {
-  let html = "";
-  const numberFormatter = new Intl.NumberFormat(languageTag);
-  const dateFormatter = new Intl.DateTimeFormat(languageTag, {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  function setList(list) {
+    listItems = list;
+    render();
+  }
 
-  listItems.forEach((item) => {
-    html += `
+  function render() {
+    let html = "";
+    const numberFormatter = new Intl.NumberFormat(languageTag);
+    const dateFormatter = new Intl.DateTimeFormat(languageTag, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    listItems.forEach((item) => {
+      html += `
       <li>
         <div><b>Name: </b> ${item.name}</div>
         <div><b>Created at: </b> ${dateFormatter.format(new Date(item.created_at))}</div>
         <div><b>Forks: </b> ${numberFormatter.format(item.forks)}</div>
       </li>`;
-  });
+    });
 
-  listElement.innerHTML = html;
-}
+    listElement.innerHTML = html;
+  }
 
-render();
+  return {
+    setList,
+  };
+})();
+
+const Data = (function ($) {
+  const searchInput = document.querySelector("#search");
+
+  searchInput.addEventListener("keyup", search);
+
+  function search(event) {
+    if (event && event.keyCode === 13) {
+      $.setList([
+        {
+          name: "Nome",
+          created_at: "2021-01-23T20:10:50Z",
+          forks: 10,
+        },
+      ]);
+    }
+  }
+})(Template);
