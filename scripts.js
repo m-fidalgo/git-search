@@ -31,7 +31,7 @@ const Template = (function () {
     listItems.forEach((item) => {
       html += `
       <li>
-        <div><b>Name: </b> ${item.name}</div>
+        <div><b>Name: </b> ${item.full_name}</div>
         <div><b>Created at: </b> ${dateFormatter.format(new Date(item.created_at))}</div>
         <div><b>Forks: </b> ${numberFormatter.format(item.forks)}</div>
       </li>`;
@@ -50,15 +50,14 @@ const Data = (function ($) {
 
   searchInput.addEventListener("keyup", search);
 
-  function search(event) {
+  async function search(event) {
     if (event && event.keyCode === 13) {
-      $.setList([
-        {
-          name: "Nome",
-          created_at: "2021-01-23T20:10:50Z",
-          forks: 10,
-        },
-      ]);
+      const searchQuery = searchInput.value;
+      let response = await fetch(
+        `https://api.github.com/search/repositories?q=${searchQuery}`
+      );
+      response = await response.json();
+      $.setList(response.items);
     }
   }
 })(Template);
